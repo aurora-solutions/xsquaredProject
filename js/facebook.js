@@ -96,7 +96,7 @@ function loginWithFacebookPasswordEmail(email, password) {
                 userAuth();
                 $(".lity-close").click();
             } else {
-                alert("Something went wrong. Please try again");
+                alert("Unable to authenticate with facebook. Please try again.");
             }
         }
     })
@@ -130,8 +130,6 @@ function userAuth() {
                     renderActiveOrders(thisOrder['rId'], thisOrder['timestamp'], thisOrder['type'], thisOrder['amount'], thisOrder['price'], thisOrder['symbol']);
                 }
             }
-
-
 
         }
     })
