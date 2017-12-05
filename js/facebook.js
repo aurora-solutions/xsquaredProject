@@ -2,13 +2,6 @@ $(document).ready(function () {
     // This will be triggered automatically after the SDK is loaded successfully
     // write your FB fucntions inside this
     window.fbAsyncInit = function () {
-        FB.init({
-            appId: '1876589325965039',
-            cookie: true,
-            xfbml: true,
-            version: 'v2.11'
-        });
-
         FB.getLoginStatus(function (response) {
             if (response.status === 'connected') {
                 getFacebookUserInfo(true);
