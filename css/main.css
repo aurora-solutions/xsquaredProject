@@ -387,6 +387,14 @@ ul.checkout-bar a {
   }
 }
 
+.social-link {
+    cursor: pointer;
+}
+
+.social-link:hover .social-link-text {
+    text-decoration: underline;
+}
+
 .dropdown-dark {
   background: #444;
   border-color: #111111 #0a0a0a black;
