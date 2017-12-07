@@ -772,7 +772,9 @@
      url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/logout.php',
      complete: function (transport) {
        localStorage.setItem('oauth', "");
-       window.location = window.location.href;
+       IN.User.logout(function() {
+           window.location = window.location.href;
+       });
      }
    })
 
