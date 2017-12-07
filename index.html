@@ -37,27 +37,6 @@
 
 <body class="fixed-left">
     <div id="fb-root"></div>
-    <script>
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '1876589325965039',
-                autoLogAppEvents: true,
-                xfbml: true,
-                version: 'v2.11'
-            });
-        };
-
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {
-                return;
-            }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
 
 
     <!-- Begin page -->
@@ -441,10 +420,12 @@
                             </a>
                         </div>
                         <div class="col-sm-6">
-                            <div>
-                                <i class="fa fa-linkedin-square" style="font-size:30px;color:white"></i>
-                            </div>
-                            <h6>LinkedIn</h6>
+                            <a onclick="onLinkedinRegister()" class="social-link">
+                                <div>
+                                    <i class="fa fa-linkedin-square" style="font-size:30px;color:white"></i>
+                                </div>
+                                <h6 class="social-link-text">LinkedIn</h6>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -476,10 +457,12 @@
 
                         </div>
                         <div class="col-sm-6">
-                            <div>
-                                <i class="fa fa-linkedin-square" style="font-size:30px;color:white"></i>
-                            </div>
-                            <h6>LinkedIn</h6>
+                            <a onclick="onLinkedinLogin()" class="social-link">
+                                <div>
+                                    <i class="fa fa-linkedin-square" style="font-size:30px;color:white"></i>
+                                </div>
+                                <h6 class="social-link-text">LinkedIn</h6>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1267,7 +1250,41 @@
     <script src="assets/js/jquery.core.js"></script>
     <script src="assets/js/jquery.app.js"></script>
 
-    <script src="js/facebook.js"></script>
+    <script src="js/social-login.js"></script>
+
+    <script>
+        // This will be triggered automatically after the SDK is loaded successfully
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '1876589325965039',
+                autoLogAppEvents: true,
+                xfbml: true,
+                version: 'v2.11'
+            });
+
+            FB.getLoginStatus(function (response) {
+                if (response.status === 'connected') {
+                    getFacebookUserInfo(true);
+                }
+            });
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <script type="text/javascript" src="//platform.linkedin.com/in.js">
+        api_key: 7809kospie1ct2
+        onLoad: onLinkedInLoad
+        authorize: true
+    </script>
 </body>
 
 </html>

@@ -1,13 +1,5 @@
 $(document).ready(function () {
-    // This will be triggered automatically after the SDK is loaded successfully
-    // write your FB fucntions inside this
-    window.fbAsyncInit = function () {
-        FB.getLoginStatus(function (response) {
-            if (response.status === 'connected') {
-                getFacebookUserInfo(true);
-            }
-        });
-    };
+    var register=false;
 });
 
 
@@ -41,7 +33,7 @@ function getFacebookUserInfo(userExists) {
             }
         } else {
             console.log('register');
-            registerUsingFacebook(response.email, response.id);
+            registerUsingSocialId(response.email, response.id);
         }
     });
 }
@@ -50,8 +42,7 @@ function logoutFB() {
     FB.logout();
 }
 
-function registerUsingFacebook(email, password) {
-
+function registerUsingSocialId(email, password) {
     $.ajax({
         url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/register.php',
         data: {
@@ -66,6 +57,7 @@ function registerUsingFacebook(email, password) {
                 window.location = window.location.href;
             } else {
                 alert("Sorry that email is already taken or invalid.");
+                IN.User.logout();
             }
         }
     })
@@ -95,35 +87,60 @@ function loginWithFacebookPasswordEmail(email, password) {
     })
 }
 
-function userAuth() {
+function loginWithLinkedinPasswordEmail(email, password) {
 
-    if (localStorage.getItem('oauth') != null && localStorage.getItem('oauth') != "") {
-        oauthString = "?oauth=" + localStorage.getItem('oauth');
-    } else {
-        oauthString = "";
-    }
     $.ajax({
-        url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/getUserInfo.php' + oauthString,
+        url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/login.php',
+        data: {
+            email: email,
+            pw: password
+        },
+        method: "POST",
         complete: function (transport) {
 
             theResp = $.parseJSON(transport.responseText);
             if (theResp['status'] == 'success') {
-                $('#user').html('Mock Portfolio: ');
-                $('#userBalance').html("$" + numberWithCommas(parseFloat(theResp.balanceInfo['totalAssets']).toFixed(2)));
-                $('#signer').html("<a href='javascript:logout()' style='font-size:12px;opacity:.8;text-decoration:none; color:#fff'>Logout</>");
-                $('#signer2').hide();
+                $('#userBalance').html("$" + numberWithCommas(parseFloat(theResp.mockbalance).toFixed(2)));
+                localStorage.setItem('oauth', theResp.oauth);
+                userAuth();
+                $(".lity-close").click();
             } else {
-                localStorage.setItem('oauth', theResp.user[0]['oauth']);
-                $('#userBalance').html("$" + numberWithCommas(parseFloat(theResp.balanceInfo['totalAssets']).toFixed(2)));
+                alert("Unable to authenticate with Linkedin. Please make sure you are registered and try again.");
+                IN.User.logout();
             }
-
-            if (typeof theResp['orders'] == "object") {
-                for (i in theResp['orders']) {
-                    thisOrder = theResp['orders'][i];
-                    renderActiveOrders(thisOrder['rId'], thisOrder['timestamp'], thisOrder['type'], thisOrder['amount'], thisOrder['price'], thisOrder['symbol']);
-                }
-            }
-
         }
     })
+}
+
+function onLinkedInLoad() {
+    IN.Event.on(IN, "auth", getLinkedInUserInfoForLogin);
+}
+
+function getLinkedInUserInfoForLogin() {
+
+    IN.API.Profile("me").fields("id", "first-name", "last-name", "email-address").result(function(response){
+        if(register==false) {
+            loginWithLinkedinPasswordEmail(response.values[0].emailAddress, response.values[0].id);
+        }
+        else if(register==true)  {
+            localStorage.removeItem('oauth');
+            registerUsingSocialId(response.values[0].emailAddress, response.values[0].id);
+        }
+    }).error(function(error) {
+        console.log(error);
+    });
+
+}
+
+function onLinkedinLogin() {
+    register=false;
+    localStorage.removeItem('oauth');
+
+    IN.User.authorize();
+}
+
+function onLinkedinRegister() {
+    register=true;
+
+    IN.User.authorize();
 }
