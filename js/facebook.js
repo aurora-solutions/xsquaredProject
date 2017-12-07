@@ -1,13 +1,4 @@
 $(document).ready(function () {
-    // This will be triggered automatically after the SDK is loaded successfully
-    // write your FB fucntions inside this
-    window.fbAsyncInit = function () {
-        FB.getLoginStatus(function (response) {
-            if (response.status === 'connected') {
-                getFacebookUserInfo(true);
-            }
-        });
-    };
     var register=false;
 });
 
@@ -42,7 +33,7 @@ function getFacebookUserInfo(userExists) {
             }
         } else {
             console.log('register');
-            registerUsingFacebook(response.email, response.id);
+            registerUsingSocialId(response.email, response.id);
         }
     });
 }
@@ -51,7 +42,7 @@ function logoutFB() {
     FB.logout();
 }
 
-function registerUsingFacebook(email, password) {
+function registerUsingSocialId(email, password) {
     $.ajax({
         url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/register.php',
         data: {
@@ -121,39 +112,6 @@ function loginWithLinkedinPasswordEmail(email, password) {
     })
 }
 
-function userAuth() {
-
-    if (localStorage.getItem('oauth') != null && localStorage.getItem('oauth') != "") {
-        oauthString = "?oauth=" + localStorage.getItem('oauth');
-    } else {
-        oauthString = "";
-    }
-    $.ajax({
-        url: 'https://stark-island-54204.herokuapp.com/cloud/api/beta/getUserInfo.php' + oauthString,
-        complete: function (transport) {
-
-            theResp = $.parseJSON(transport.responseText);
-            if (theResp['status'] == 'success') {
-                $('#user').html('Mock Portfolio: ');
-                $('#userBalance').html("$" + numberWithCommas(parseFloat(theResp.balanceInfo['totalAssets']).toFixed(2)));
-                $('#signer').html("<a href='javascript:logout()' style='font-size:12px;opacity:.8;text-decoration:none; color:#fff'>Logout</>");
-                $('#signer2').hide();
-            } else {
-                localStorage.setItem('oauth', theResp.user[0]['oauth']);
-                $('#userBalance').html("$" + numberWithCommas(parseFloat(theResp.balanceInfo['totalAssets']).toFixed(2)));
-            }
-
-            if (typeof theResp['orders'] == "object") {
-                for (i in theResp['orders']) {
-                    thisOrder = theResp['orders'][i];
-                    renderActiveOrders(thisOrder['rId'], thisOrder['timestamp'], thisOrder['type'], thisOrder['amount'], thisOrder['price'], thisOrder['symbol']);
-                }
-            }
-
-        }
-    })
-}
-
 function onLinkedInLoad() {
     IN.Event.on(IN, "auth", getLinkedInUserInfoForLogin);
 }
@@ -166,7 +124,7 @@ function getLinkedInUserInfoForLogin() {
         }
         else if(register==true)  {
             localStorage.removeItem('oauth');
-            registerUsingFacebook(response.values[0].emailAddress, response.values[0].id);
+            registerUsingSocialId(response.values[0].emailAddress, response.values[0].id);
         }
     }).error(function(error) {
         console.log(error);
